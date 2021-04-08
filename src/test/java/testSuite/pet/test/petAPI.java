@@ -1,36 +1,29 @@
 package testSuite.pet.test;
 
-import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import testSuite.BaseTest;
 import testSuite.pet.model.CategoryModel;
-import testSuite.pet.model.PetRequestModel;
 import testSuite.pet.model.TagModel;
-import util.DataGenerator;
 
 import static org.hamcrest.Matchers.*;
 
-public class petAPITest1 extends BaseTest {
-    private String petBodyRequest;
+public class petAPI extends BaseTest {
     private int petId;
-    private String petEndPoint;
     private String findByStatus;
+    private String petIdURL;
 
 
     @BeforeClass
     public void testSetup()
     {
-        PetRequestModel petRequest = new PetRequestModel();
         CategoryModel category = new CategoryModel();
         TagModel tag = new TagModel();
-        DataGenerator data = new DataGenerator();
-
-        petEndPoint = projectConfig.getAPIList("pet").get("path").getAsString();
-        findByStatus = petEndPoint + projectConfig.getAPIList("pet").get("findByStatus").getAsString();
 
         petId = data.randomNumber();
+        findByStatus = petEndPoint + projectConfig.getAPIList("pet").get("findByStatus").getAsString();
+        petIdURL = String.format("%s/%s", petEndPoint, petId);
         String[] photoUrls = new String[]{"Url1", "Url2"};
 
         tag.setId(data.randomNumber());
@@ -40,25 +33,25 @@ public class petAPITest1 extends BaseTest {
         category.setName("CategoryName");
 
         petRequest.setId(petId);
-        petRequest.setName("Some name");
+        petRequest.setName("Dog");
         petRequest.setCategory(category);
         petRequest.setPhotoUrls(photoUrls);
         petRequest.setTags(new TagModel[]{tag});
         petRequest.setStatus("available");
-
-        petBodyRequest = gson.toJson(petRequest);
     }
 
-    @Test
+    @Test(priority = 1)
     public void cratePet()
     {
+        String createPetBodyRequest = gson.toJson(petRequest);
+
         RestAssured
                 .given()
                     .baseUri(projectConfig.baseURL)
                     .and()
                     .contentType("application/json")
                     .with()
-                    .request().body(petBodyRequest)
+                    .request().body(createPetBodyRequest)
                 .when()
                     .post(petEndPoint)
                 .then()
@@ -68,7 +61,7 @@ public class petAPITest1 extends BaseTest {
                     .body("id", equalTo(petId));
     }
 
-    @Test
+    @Test(priority = 2)
     public void findPetByStatus()
     {
         RestAssured
@@ -87,11 +80,9 @@ public class petAPITest1 extends BaseTest {
                     .and().extract().body().asString();
     }
 
-    @Test
+    @Test(priority = 3)
     public void findById()
     {
-        String petIdURL = String.format("/pet/%s", petId);
-
         RestAssured
                 .given()
                     .baseUri(projectConfig.baseURL)
@@ -105,5 +96,42 @@ public class petAPITest1 extends BaseTest {
                     .and()
                     .body("id", equalTo(petId))
                     .and().extract().body().asString();
+    }
+
+    @Test(priority = 4)
+    public void updatePet()
+    {
+        petRequest.setName("Cat");
+        petRequest.setStatus("pending");
+        String createPetBodyRequest = gson.toJson(petRequest);
+
+        RestAssured
+                .given()
+                    .baseUri(projectConfig.baseURL)
+                    .and()
+                    .contentType("application/json")
+                    .with()
+                    .request().body(createPetBodyRequest)
+                .when()
+                    .put(petEndPoint)
+                .then()
+                    .log().all()
+                    .and().assertThat().statusCode(is(equalTo(200)))
+                    .and()
+                    .body("name", equalTo("Cat"));
+    }
+
+    @Test(priority = 5)
+    public void deletePet()
+    {
+        RestAssured
+                .given()
+                    .baseUri(projectConfig.baseURL)
+                .when()
+                    .delete(petIdURL)
+                .then()
+                    .log().all()
+                    .and().assertThat().statusCode(is(equalTo(200)))
+                    .and().extract().body().asString();;
     }
 }
