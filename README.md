@@ -14,3 +14,5 @@ Once the libraries are importe ru can run the test cases base on following guide
 
 - https://testng.org/doc/eclipse.html#eclipse-create-class
 - https://www.jetbrains.com/help/idea/run-debug-configuration-testng.html
+
+You can find the test cases into https://github.com/OscF95/petStoreAPITest/tree/master/src/test/java/testSuite/pet folder
