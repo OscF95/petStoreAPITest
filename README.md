@@ -12,5 +12,5 @@ In order to run the test cases you just need to clone the project and get the ma
 
 Once the libraries are importe ru can run the test cases base on following guide lines (it depends on your IDE):
 
-https://testng.org/doc/eclipse.html#eclipse-create-class
-https://www.jetbrains.com/help/idea/run-debug-configuration-testng.html
+- https://testng.org/doc/eclipse.html#eclipse-create-class
+- https://www.jetbrains.com/help/idea/run-debug-configuration-testng.html
