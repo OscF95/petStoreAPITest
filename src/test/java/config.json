@@ -1,0 +1,11 @@
+{
+  "projectConfig": {
+    "baseURL": "https://petstore3.swagger.io/api/v3"
+  },
+  "api": {
+    "pet": {
+      "path": "/pet",
+      "findByStatus": "/findByStatus?status="
+    }
+  }
+}
